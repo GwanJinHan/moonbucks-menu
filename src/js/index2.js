@@ -1,3 +1,4 @@
+//작동 x 개선 필요
 const inputForm = document.querySelector("#espresso-menu-form");
 const inputValue = document.querySelector("#espresso-menu-name");
 const inputButton = document.querySelector("#espresso-menu-submit-button");
