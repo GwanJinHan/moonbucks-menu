@@ -3,54 +3,36 @@ const inputValue = document.querySelector("#espresso-menu-name");
 const inputButton = document.querySelector("#espresso-menu-submit-button");
 const menuList = document.querySelector("#espresso-menu-list");
 
-
-const createElement = (tag, className, innerText, type) => {
-  const element = document.createElement(tag);
-  element.className = className;
-  element.innerText = innerText ?? ""; //null 병합 연산자
-  element.type = type ?? "";
-  return element;
-}
-
 const handleSubmitMenu = (event) => {
   event.preventDefault();
   const newMenu = inputValue.value;
   if (newMenu !== '') {
     inputValue.value = "";
-    paintMenu(newMenu);
+    menuList.innerHTML +=  `<li class="menu-list-item d-flex items-center py-2">
+    <span class="w-100 pl-2 menu-name">${newMenu}</span>
+    <button type="button" class="bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button">수정</button>
+    <button type="button" class="bg-gray-50 text-gray-500 text-sm menu-remove-button">삭제</button>
+  </li>`;
     countMenu();
+    const editButton = document.querySelector(".menu-edit-button:last-child");
+    const removeButton = document.querySelector(".menu-remove-button:last-child");    
+    console.log(editButton)
+    console.dir(editButton)
+    editButton.addEventListener("click", editMenu);
+    removeButton.addEventListener("click", removeMenu);
   }
 }
 
-const paintMenu = (newMenu) => {
-  const li = createElement("li","menu-list-item d-flex items-center py-2");
-  const span = createElement("span", "w-100 pl-2 menu-name", newMenu);
-  const editButton = createElement("button", "bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button", "수정", "button");
-  editButton.addEventListener("click", editMenu);
-  const removeButton = createElement("button", "bg-gray-50 text-gray-500 text-sm menu-remove-button", "삭제", "button");
-  removeButton.addEventListener("click", removeMenu);
-
-  menuList.appendChild(li);
-  li.appendChild(span);
-  li.appendChild(editButton);
-  li.appendChild(removeButton);
-}
-
-
-
 function editMenu() {
+  const menuName = document.querySelector(".menu-name");
   const newName = window.prompt('어떤 이름으로 변경하시겠어요?');
-  this.previousSibling.innerText = newName;
+  menuName.innerText = newName;
 }
 
 
 function removeMenu() {
   const confirm = window.confirm('정말 삭제하시겠어요?');
-  if (confirm) {
-    menuList.removeChild(this.parentElement);
-    countMenu();
-  } 
-  
+  if (confirm) menuList.removeChild(this.parentElement);
 }
 
 const countMenu = () => {
@@ -58,7 +40,6 @@ const countMenu = () => {
   let count = menuList.childElementCount;
   countDic.innerText = `총 ${count}개`;
 }
-
 
 inputForm.addEventListener("submit", handleSubmitMenu);
 inputButton.addEventListener("click", handleSubmitMenu);
