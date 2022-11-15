@@ -2,46 +2,52 @@
 const inputForm = document.querySelector("#espresso-menu-form");
 const inputValue = document.querySelector("#espresso-menu-name");
 const inputButton = document.querySelector("#espresso-menu-submit-button");
-const menuList = document.querySelector("#espresso-menu-list");
+const menuList = document.querySelector(`#${findCurrentMenuCursor()}-menu-list`);
+
+
+function findCurrentMenuCursor () {
+  const ul = document.querySelector("ul");
+  return ul.id.split('-')[0];
+}
 
 
 const createElement = (tag, className, innerText, type) => {
   const element = document.createElement(tag);
   element.className = className;
-  element.innerText = innerText ?? ""; //null 병합 연산자
+  element.innerText = innerText ?? ""; 
   element.type = type ?? "";
   return element;
 }
 
-const handleSubmitMenu = (event) => {
-  event.preventDefault();
-  const newMenu = inputValue.value;
-  if (newMenu !== '') {
-    inputValue.value = "";
-    paintMenu(newMenu);
-    countMenu();
-  }
-}
 
 const paintMenu = (newMenu) => {
-  const li = createElement("li","menu-list-item d-flex items-center py-2");
-  const span = createElement("span", "w-100 pl-2 menu-name", newMenu);
-  const editButton = createElement("button", "bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button", "수정", "button");
-  editButton.addEventListener("click", editMenu);
-  const removeButton = createElement("button", "bg-gray-50 text-gray-500 text-sm menu-remove-button", "삭제", "button");
-  removeButton.addEventListener("click", removeMenu);
 
+  const li = createElement("li",`menu-list-item d-flex items-center py-2 ${findCurrentMenuCursor()}`);
+  const span = createElement("span", "w-100 pl-2 menu-name", newMenu);
+  const soldOutButton = createElement("button", "bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button", "품절", "button");
+  const editButton = createElement("button", "bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button", "수정", "button");
+  const removeButton = createElement("button", "bg-gray-50 text-gray-500 text-sm menu-remove-button", "삭제", "button");
+  
   menuList.appendChild(li);
   li.appendChild(span);
+  li.appendChild(soldOutButton);
   li.appendChild(editButton);
   li.appendChild(removeButton);
+  
+
+  soldOutButton.addEventListener("click", soldOutMenu);
+  editButton.addEventListener("click", editMenu);
+  removeButton.addEventListener("click", removeMenu);
 }
 
 
+function soldOutMenu() {
+  this.parentElement.classList.toggle("sold-out");
+}
 
 function editMenu() {
   const newName = window.prompt('어떤 이름으로 변경하시겠어요?');
-  this.previousSibling.innerText = newName;
+  this.previousSibling.previousSibling.innerText = newName;
 }
 
 
@@ -51,13 +57,28 @@ function removeMenu() {
     menuList.removeChild(this.parentElement);
     countMenu();
   } 
-  
 }
 
+
 const countMenu = () => {
+  const menuList = document.querySelector(`#${findCurrentMenuCursor()}-menu-list`);
   const countDic = document.querySelector(".menu-count");
-  let count = menuList.childElementCount;
+  let count = 0
+  menuList.childNodes.forEach((element) => {
+    if (!element.classList.contains("hidden")) count++;
+  });
   countDic.innerText = `총 ${count}개`;
+}
+
+
+const handleSubmitMenu = (event) => {
+  event.preventDefault();
+  const newMenu = inputValue.value;
+  if (newMenu !== '') {
+    inputValue.value = "";
+    paintMenu(newMenu);
+    countMenu();
+  }
 }
 
 

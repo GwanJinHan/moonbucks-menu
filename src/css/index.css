@@ -51,3 +51,7 @@ ul li button:hover {
   text-decoration: line-through;
   color: gray;
 }
+
+.hidden {
+  display: none;
+}

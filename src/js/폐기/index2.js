@@ -1,4 +1,4 @@
-//작동 x 개선 필요
+//작동X 개선 필요
 const inputForm = document.querySelector("#espresso-menu-form");
 const inputValue = document.querySelector("#espresso-menu-name");
 const inputButton = document.querySelector("#espresso-menu-submit-button");
@@ -14,13 +14,11 @@ const handleSubmitMenu = (event) => {
     <button type="button" class="bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button">수정</button>
     <button type="button" class="bg-gray-50 text-gray-500 text-sm menu-remove-button">삭제</button>
   </li>`;
-    countMenu();
-    const editButton = document.querySelector(".menu-edit-button:last-child");
-    const removeButton = document.querySelector(".menu-remove-button:last-child");    
-    console.log(editButton)
-    console.dir(editButton)
-    editButton.addEventListener("click", editMenu);
-    removeButton.addEventListener("click", removeMenu);
+  const editButton = menuList.querySelector("button:last-child");
+  const removeButton = menuList.querySelector("button");
+  editButton.addEventListener("click", editMenu);
+  removeButton.addEventListener("click", removeMenu);
+  countMenu();
   }
 }
 
@@ -38,7 +36,7 @@ function removeMenu() {
 
 const countMenu = () => {
   const countDic = document.querySelector(".menu-count");
-  let count = menuList.childElementCount;
+  const count = menuList.childElementCount;
   countDic.innerText = `총 ${count}개`;
 }
 
