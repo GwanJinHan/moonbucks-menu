@@ -8,16 +8,6 @@ const MENUS_KEY = "menus" ;
 
 let menus = [];
 
-const saveLocalStorage = (menus) => {  
-  localStorage.setItem(MENUS_KEY, JSON.stringify(menus));
-}
-
-
-function findCurrentMenuCursor () {
-  const ul = document.querySelector("ul");
-  return ul.id.split('-')[0];
-}
-
 
 const createElement = (tag, className, innerText, type) => {
   const element = document.createElement(tag);
@@ -48,13 +38,14 @@ const paintMenu = (newMenu, cursor) => {
 }
 
 
-function soldOutMenu() {
-  this.parentElement.classList.toggle("sold-out");
+function soldOutMenu(event) {
+  event.target.parentElement.classList.toggle("sold-out");
 }
 
-function editMenu() {
+
+function editMenu(event) {
   const newName = window.prompt('어떤 이름으로 변경하시겠어요?');
-  this.previousSibling.previousSibling.innerText = newName;
+  event.target.previousSibling.previousSibling.innerText = newName;
 }
 
 
@@ -65,7 +56,7 @@ function removeMenu(event) {
     const section = event.target.parentElement.classList;
     menus = menus.filter((element) => {
       return element.name !== name || !section.contains(element.section)});
-    saveLocalStorage(menus);
+      saveLocalStorage(menus);
     menuList.removeChild(event.target.parentElement);
     countMenu();
   } 
@@ -90,7 +81,7 @@ const handleSubmitMenu = (event) => {
     inputValue.value = "";
     paintMenu(newMenu, findCurrentMenuCursor());
     countMenu();
-    
+
     menus.push({
       "name" : newMenu,
       "section" : defHidden(findCurrentMenuCursor())
@@ -109,6 +100,7 @@ const defHidden = (cursor) => {
 inputForm.addEventListener("submit", handleSubmitMenu);
 inputButton.addEventListener("click", handleSubmitMenu);
 
+
 const savedMenus = localStorage.getItem(MENUS_KEY);
 
 if (savedMenus !== null) {
@@ -117,16 +109,20 @@ if (savedMenus !== null) {
     menus = parsedMenus;
     countMenu();
 }
-//20221109
-// 1. 함수를 많이 써서 반복되는 내용을 줄이자
-// 2. 함수는 모두 밖으로 -> 어떻게 맵핑할지
-// 3. 딕셔너리로 DB 생성
-// 4. let <-> const
-// 5. 화살표 함수?
-// 6. 파일 나누기
 
-/* <기능 세분회>
-1. 입력 (이벤트)
-2. 태그 생성
-3. 버튼 - 삭제, 수정
-4. 카운트 */
+
+function saveLocalStorage (menus) {  
+    localStorage.setItem(MENUS_KEY, JSON.stringify(menus));
+}
+
+
+function findCurrentMenuCursor () {
+  const ul = document.querySelector("ul");
+  return ul.id.split('-')[0];
+}
+
+
+//20221116
+//문제점 : 1. delete 할 때 id, section 이 모두 같을 때 로컬 스토리지에서 둘 다 지워짐
+// 2. 메튜판 수정 시 로컬 스토리지에 반영 안 됨
+// 3. 품절 클래스 로컬 스토리지에 저장 안 됨.
