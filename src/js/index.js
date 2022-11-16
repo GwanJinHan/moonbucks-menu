@@ -4,6 +4,14 @@ const inputValue = document.querySelector("#espresso-menu-name");
 const inputButton = document.querySelector("#espresso-menu-submit-button");
 const menuList = document.querySelector(`#${findCurrentMenuCursor()}-menu-list`);
 
+const MENUS_KEY = "menus" ;
+
+let menus = [];
+
+const saveLocalStorage = (menus) => {  
+  localStorage.setItem(MENUS_KEY, JSON.stringify(menus));
+}
+
 
 function findCurrentMenuCursor () {
   const ul = document.querySelector("ul");
@@ -20,9 +28,8 @@ const createElement = (tag, className, innerText, type) => {
 }
 
 
-const paintMenu = (newMenu) => {
-
-  const li = createElement("li",`menu-list-item d-flex items-center py-2 ${findCurrentMenuCursor()}`);
+const paintMenu = (newMenu, cursor) => {
+  const li = createElement("li",`menu-list-item d-flex items-center py-2 ${cursor}`);
   const span = createElement("span", "w-100 pl-2 menu-name", newMenu);
   const soldOutButton = createElement("button", "bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button", "품절", "button");
   const editButton = createElement("button", "bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button", "수정", "button");
@@ -34,7 +41,7 @@ const paintMenu = (newMenu) => {
   li.appendChild(editButton);
   li.appendChild(removeButton);
   
-
+  
   soldOutButton.addEventListener("click", soldOutMenu);
   editButton.addEventListener("click", editMenu);
   removeButton.addEventListener("click", removeMenu);
@@ -51,10 +58,15 @@ function editMenu() {
 }
 
 
-function removeMenu() {
+function removeMenu(event) {
   const confirm = window.confirm('정말 삭제하시겠어요?');
   if (confirm) {
-    menuList.removeChild(this.parentElement);
+    const name = event.target.parentElement.firstChild.innerText;
+    const section = event.target.parentElement.classList;
+    menus = menus.filter((element) => {
+      return element.name !== name || !section.contains(element.section)});
+    saveLocalStorage(menus);
+    menuList.removeChild(event.target.parentElement);
     countMenu();
   } 
 }
@@ -76,14 +88,35 @@ const handleSubmitMenu = (event) => {
   const newMenu = inputValue.value;
   if (newMenu !== '') {
     inputValue.value = "";
-    paintMenu(newMenu);
+    paintMenu(newMenu, findCurrentMenuCursor());
     countMenu();
+    
+    menus.push({
+      "name" : newMenu,
+      "section" : defHidden(findCurrentMenuCursor())
+    });
+    saveLocalStorage(menus);
   }
+}
+
+
+const defHidden = (cursor) => {
+  const def = cursor == "espresso" ? "espresso" : `${cursor} hidden`;
+  return def;
 }
 
 
 inputForm.addEventListener("submit", handleSubmitMenu);
 inputButton.addEventListener("click", handleSubmitMenu);
+
+const savedMenus = localStorage.getItem(MENUS_KEY);
+
+if (savedMenus !== null) {
+    const parsedMenus = JSON.parse(savedMenus);
+    parsedMenus.forEach((element) => paintMenu(element.name, element.section));
+    menus = parsedMenus;
+    countMenu();
+}
 //20221109
 // 1. 함수를 많이 써서 반복되는 내용을 줄이자
 // 2. 함수는 모두 밖으로 -> 어떻게 맵핑할지
