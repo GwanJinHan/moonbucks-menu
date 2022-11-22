@@ -1,25 +1,42 @@
 const inputForm = document.querySelector("#espresso-menu-form");
 const inputValue = document.querySelector("#espresso-menu-name");
 const inputButton = document.querySelector("#espresso-menu-submit-button");
-const menuList = document.querySelector(`#${findCurrentMenuCursor()}-menu-list`);
+const menuList = document.querySelector("ul");
 
 const MENUS_KEY = "menus" ;
 
 let menus = [];
 
-const createElement = (tag, className, innerText, type) => {
+inputForm.addEventListener("submit", handleSubmitMenu);
+inputButton.addEventListener("click", handleSubmitMenu);
+
+
+
+function handleSubmitMenu(event) {
+  event.preventDefault();
+  const newMenu = inputValue.value;
+  const CurrentMenuSection = menuList.id.split('-')[0];
+  if (newMenu !== '') {
+    inputValue.value = "";
+    paintMenu(newMenu, CurrentMenuSection);
+    countMenu();
+    saveLocalStorage(menus);
+  }
+}
+
+function createElement(tag, classList, innerText, type) {
   const element = document.createElement(tag);
-  element.className = className;
+  element.className = classList;
   element.innerText = innerText ?? ""; 
   element.type = type ?? "";
   return element;
 }
 
 
-const paintMenu = (newMenu, classList) => {
+function paintMenu(newMenu, classList){
   const li = createElement("li",`menu-list-item d-flex items-center py-2 ${classList}`);
   const span = createElement("span", "w-100 pl-2 menu-name", newMenu);
-  const soldOutButton = createElement("button", "bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button", "품절", "button");
+  const soldOutButton = createElement("button", "bg-gray-50 text-gray-500 text-sm mr-1 menu-sold-out-button", "품절", "button");
   const editButton = createElement("button", "bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button", "수정", "button");
   const removeButton = createElement("button", "bg-gray-50 text-gray-500 text-sm menu-remove-button", "삭제", "button");
   
@@ -35,7 +52,8 @@ const paintMenu = (newMenu, classList) => {
   removeButton.addEventListener("click", removeMenu);
 }
 
-
+//Buttons//////////////////////////////////////////////////
+   
 function soldOutMenu(event) {
   event.target.parentElement.classList.toggle("sold-out");
   saveLocalStorage(menus);
@@ -44,7 +62,7 @@ function soldOutMenu(event) {
 
 function editMenu(event) {
   const newName = window.prompt('어떤 이름으로 변경하시겠어요?');
-  event.target.previousSibling.previousSibling.innerText = newName;
+  event.target.parentElement.querySelector("span").innerText = newName;
   saveLocalStorage(menus);
 }
 
@@ -58,34 +76,8 @@ function removeMenu(event) {
   } 
 }
 
-
-const countMenu = () => {
-  const menuList = document.querySelector(`#${findCurrentMenuCursor()}-menu-list`);
-  const countDic = document.querySelector(".menu-count");
-  let count = 0
-  menuList.childNodes.forEach((element) => {
-    if (!element.classList.contains("hidden")) count++;
-  });
-  countDic.innerText = `총 ${count}개`;
-}
-
-
-const handleSubmitMenu = (event) => {
-  event.preventDefault();
-  const newMenu = inputValue.value;
-  if (newMenu !== '') {
-    inputValue.value = "";
-    paintMenu(newMenu, findCurrentMenuCursor());
-    countMenu();
-    saveLocalStorage(menus);
-  }
-}
-
-
-inputForm.addEventListener("submit", handleSubmitMenu);
-inputButton.addEventListener("click", handleSubmitMenu);
-
-
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 
 function saveLocalStorage (menus) {
   const menuList = document.querySelectorAll(".menu-list-item");
@@ -107,11 +99,8 @@ function saveLocalStorage (menus) {
   localStorage.setItem(MENUS_KEY, JSON.stringify(menus));
 }
 
-function findCurrentMenuCursor () {
-  const ul = document.querySelector("ul");
-  return ul.id.split('-')[0];
-}
-
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 
 const savedMenus = localStorage.getItem(MENUS_KEY);
 
@@ -119,4 +108,17 @@ if (savedMenus !== null) {
   const parsedMenus = JSON.parse(savedMenus);
   parsedMenus.forEach((element) => paintMenu(element.name, element.classList));
   countMenu();
+}
+
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+
+function countMenu() {
+  const menuList = document.querySelector("ul");
+  const countDic = document.querySelector(".menu-count");
+  let count = 0
+  menuList.childNodes.forEach((element) => {
+    if (!element.classList.contains("hidden")) count++;
+  });
+  countDic.innerText = `총 ${count}개`;
 }
