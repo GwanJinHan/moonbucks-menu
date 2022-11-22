@@ -82,12 +82,6 @@ const handleSubmitMenu = (event) => {
 }
 
 
-/* const defHidden = (cursor) => {
-  const def = cursor == "espresso" ? "espresso" : `${cursor} hidden`;
-  return def;
-} */
-
-
 inputForm.addEventListener("submit", handleSubmitMenu);
 inputButton.addEventListener("click", handleSubmitMenu);
 
@@ -126,23 +120,3 @@ if (savedMenus !== null) {
   parsedMenus.forEach((element) => paintMenu(element.name, element.classList));
   countMenu();
 }
-
-
-//20221116
-//문제점 : 1. delete 할 때 id, section 이 모두 같을 때 로컬 스토리지에서 둘 다 지워짐
-// 2. 메튜판 수정 시 로컬 스토리지에 반영 안 됨
-// 3. 품절 클래스 로컬 스토리지에 저장 안 됨.
-
-// 20221121
-// 1.  delete 할 때 id, section 이 모두 같을 때 로컬 스토리지에서 둘 다 지워짐
-    
-//     → 1. menus를 직접 filter로 제어하지 말고, 현재 메뉴 보드를 다시 스캔해서 menus 갱신
-    
-//     → 2. 새로운 id 생성 (date()로 고유한 id?)
-    
-// 2. 메뉴판 수정 시 로컬 스토리지에 반영 안 됨
-    
-//     → 수정 후 보드 다시 스캔해서 menus 갱신하면 가능
-    
-// 3. 품절 클래스 로컬 스토리지에 저장 안 됨.
-// → classList 도 저장하기 → menus 갱신할 때, 장치 구
