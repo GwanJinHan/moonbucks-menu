@@ -1,4 +1,3 @@
-//작동 O - 개선 필요
 const inputForm = document.querySelector("#espresso-menu-form");
 const inputValue = document.querySelector("#espresso-menu-name");
 const inputButton = document.querySelector("#espresso-menu-submit-button");
@@ -17,8 +16,8 @@ const createElement = (tag, className, innerText, type) => {
 }
 
 
-const paintMenu = (newMenu, cursor) => {
-  const li = createElement("li",`menu-list-item d-flex items-center py-2 ${cursor}`);
+const paintMenu = (newMenu, classList) => {
+  const li = createElement("li",`menu-list-item d-flex items-center py-2 ${classList}`);
   const span = createElement("span", "w-100 pl-2 menu-name", newMenu);
   const soldOutButton = createElement("button", "bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button", "품절", "button");
   const editButton = createElement("button", "bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button", "수정", "button");
@@ -39,12 +38,14 @@ const paintMenu = (newMenu, cursor) => {
 
 function soldOutMenu(event) {
   event.target.parentElement.classList.toggle("sold-out");
+  saveLocalStorage(menus);
 }
 
 
 function editMenu(event) {
   const newName = window.prompt('어떤 이름으로 변경하시겠어요?');
   event.target.previousSibling.previousSibling.innerText = newName;
+  saveLocalStorage(menus);
 }
 
 
@@ -76,11 +77,6 @@ const handleSubmitMenu = (event) => {
     inputValue.value = "";
     paintMenu(newMenu, findCurrentMenuCursor());
     countMenu();
-
-/*     menus.push({
-      "name" : newMenu,
-      "section" : defHidden(findCurrentMenuCursor())
-    }); */
     saveLocalStorage(menus);
   }
 }
@@ -96,38 +92,41 @@ inputForm.addEventListener("submit", handleSubmitMenu);
 inputButton.addEventListener("click", handleSubmitMenu);
 
 
-const savedMenus = localStorage.getItem(MENUS_KEY);
-
-if (savedMenus !== null) {
-    const parsedMenus = JSON.parse(savedMenus);
-    parsedMenus.forEach((element) => paintMenu(element.name, element.section));
-    menus = parsedMenus;
-    countMenu();
-}
-
 
 function saveLocalStorage (menus) {
   const menuList = document.querySelectorAll(".menu-list-item");
   menus = [];
   menuList.forEach((element) => {
     const menuName = element.querySelector("span").innerText;
-    const menuClassList = [...element.classList][4];
-    console.log(menuClassList)
+    let classList = [...element.classList][4];
+    if (classList != "espresso") {
+      classList += ' hidden';
+    }
+    if (element.classList.contains("sold-out")) {
+      classList += ' sold-out';
+    }
     menus.push({
       "name" : menuName,
-      "classList" : menuClassList
+      "classList" : classList
     })
   });
   localStorage.setItem(MENUS_KEY, JSON.stringify(menus));
 }
 
-
-
-
 function findCurrentMenuCursor () {
   const ul = document.querySelector("ul");
   return ul.id.split('-')[0];
 }
+
+
+const savedMenus = localStorage.getItem(MENUS_KEY);
+
+if (savedMenus !== null) {
+  const parsedMenus = JSON.parse(savedMenus);
+  parsedMenus.forEach((element) => paintMenu(element.name, element.classList));
+  countMenu();
+}
+
 
 //20221116
 //문제점 : 1. delete 할 때 id, section 이 모두 같을 때 로컬 스토리지에서 둘 다 지워짐
