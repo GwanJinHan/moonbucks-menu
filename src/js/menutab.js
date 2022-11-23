@@ -4,19 +4,14 @@ const menuHeader = document.querySelector(".heading h2");
 const menuInput = document.querySelector("#espresso-menu-name");
 const btns = document.querySelectorAll(".cafe-category-name");
 
-const menuList = document.querySelector(`#${findCurrentMenuCursor()}-menu-list`);
+const menuList = document.querySelector("ul");
 
-
-function findCurrentMenuCursor () {
-    const ul = document.querySelector("ul");
-    return ul.id.split('-')[0];
-  }
   
 
 const onMenuTabClick = (target) => {
     const menuIndex = menuSectionClass.indexOf(target.target.dataset.categoryName)
     menuHeader.innerText = `${menuSectionKo[menuIndex]} 메뉴 관리`;
-    menuInput.placeholder = `${menuSectionKo[menuIndex].substr(2)} 메뉴 이름`;
+    menuInput.placeholder = `${menuSectionKo[menuIndex].slice(2)} 메뉴 이름`;
     menuList.id = `${menuSectionClass[menuIndex]}-menu-list`;
     menuList.childNodes.forEach((element) => {
         if (element.classList[4] !== menuSectionClass[menuIndex]) {

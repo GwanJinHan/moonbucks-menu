@@ -62,8 +62,10 @@ function soldOutMenu(event) {
 
 function editMenu(event) {
   const newName = window.prompt('어떤 이름으로 변경하시겠어요?');
-  event.target.parentElement.querySelector("span").innerText = newName;
-  saveLocalStorage(menus);
+  if (newName !== "") {
+    event.target.parentElement.querySelector("span").innerText = newName;
+    saveLocalStorage(menus);
+  }
 }
 
 
@@ -85,7 +87,7 @@ function saveLocalStorage (menus) {
   menuList.forEach((element) => {
     const menuName = element.querySelector("span").innerText;
     let classList = [...element.classList][4];
-    if (classList != "espresso") {
+    if (classList !== "espresso") {
       classList += ' hidden';
     }
     if (element.classList.contains("sold-out")) {
